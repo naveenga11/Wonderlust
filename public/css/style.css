@@ -1,6 +1,12 @@
 body{
     background-color: lightgreen;
     font-family: "Plus Jakarta Sans", sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.container{
+    flex: 1;
 }
 
 .fa-compass{
@@ -46,4 +52,46 @@ body{
 .card-img-overlay:hover{
     opacity: 0.2;
     background-color: #fff;
+}
+
+/* add new element */
+.add-btn{
+    background-color: #fe424d !important;
+    border: none !important;
+}
+
+/* Footer Styles */
+ .f-info-links a {
+    color: #222;
+    text-decoration: none;
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+}
+
+.f-info {
+    text-align: center;
+    display: flex;
+    height: 8rem;
+    background-color: #ebebeb;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items:space-evenly;
+}
+
+.f-info-links , .f-info-socials, .f-info-brand{
+   width: 100%; 
+   vertical-align: middle;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+
+
+.f-info-socials i{
+    margin-right: 1rem;
+    font-size: 1.2rem;
 }

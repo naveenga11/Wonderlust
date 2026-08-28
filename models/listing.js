@@ -18,7 +18,12 @@ const listingSchema = new Schema({
         "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
     },
   },
-  price: Number,
+  price: {
+  type: Number,
+  required: true,
+  default: 0
+}
+,
   location: String,
   country: String,
 });
