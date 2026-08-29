@@ -3,14 +3,15 @@
 <div class="row mt-3">
   <div class="col-8 offset-2">
       <h3>Edit your Listing</h3>
-<form method="POST" action="/listings/<%= listing.id %>?_method=PUT">
-  <div class="mb-3">
+<form method="POST" action="/listings/<%= listing.id %>?_method=PUT" novalidate class="needs-validation">
+  <div class="mb-3">  
     <label for="title" class="form-label">Title</label>
     <input
       name="listing[title]"
       value="<%= listing.title %>"
       type="text"
       class="form-control"
+      required
     />
   </div>
 
@@ -19,6 +20,7 @@
     <textarea
       name="listing[description]"
       class="form-control"
+      required
     ><%= listing.description %></textarea>
   </div>
 
@@ -30,7 +32,9 @@
       value="<%= listing.price %>"
       type="number"
       class="form-control"
+      required
     />
+    <div class="invalid-feedback">price must be valid!</div>
   </div>
 
     <div class="mb-3 col-md-8">
