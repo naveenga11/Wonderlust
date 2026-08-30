@@ -24,6 +24,17 @@
     ><%= listing.description %></textarea>
   </div>
 
+<!-- img link -->
+  <div class="mb-3 ">
+    <label for="image" class="form-label">image link</label>
+    <input
+      name="listing[image][url]"
+      value="<%= listing.image.url %>"
+      type="text"
+      class="form-control"
+    />
+  </div>
+
   <div class="row">
   <div class="mb-3 col-md-4">
     <label for="price" class="form-label">Price</label>
@@ -51,10 +62,10 @@
   </div>
 
    <div class="mb-3 ">
-    <label for="place" class="form-label">Place</label>
+    <label for="location" class="form-label">Place</label>
     <input
-      name="listing[place]"
-      value="<%= listing.place %>"
+      name="listing[location]"
+      value="<%= listing.location %>"
       type="text"
       class="form-control"
     />

@@ -1,12 +1,21 @@
-const Joi =require("joi");
-//schema for server side validation
-module.exports.listingSchema= Joi.object({
-    listing : Joi.object({
-        title:Joi.string().required(),
-        discription:Joi.string().required(),
-        location:Joi.string().required(),
-        price:Joi.number().required().min(0),
-        country: Joi.string().required(),
-        image:Joi.string().allow("",null)
+const Joi = require("joi");
+
+module.exports.listingSchema = Joi.object({
+  listing: Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().required(),   // <-- fixed spelling
+    location: Joi.string().required(),
+    price: Joi.number().required().min(0),
+    country: Joi.string().required(),
+    // image: Joi.string().allow("", null)
+    //in data image is an object 
+    image: Joi.object({
+      filename: Joi.string().default("listingimage"),
+      url: Joi.string()
+        .uri()
+        .default(
+          "https://images.unsplash.com/photo-1625505826533-5c80aca7d157?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60"
+        )
     }).required()
+  }).required()
 });

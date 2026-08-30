@@ -37,8 +37,8 @@ const validateListing = (req,res,next)=>{
   //if error exits
   if(error){
     //addtional detail of error saparated by ","
-    let errMsg =error.details.map((el)=>el.message).join(",");
-    throw new ExpressError(400,errMsg);
+    let errMsg = error.details.map((el)=>el.message).join(",");
+    throw new ExpressError(400, errMsg);
   }else{
     next();
   }
@@ -97,7 +97,7 @@ app.put("/listings/:id",validateListing,wrapAsyanc(async (req, res) => {
 app.delete("/listings/:id", wrapAsyanc(async (req, res) => {
   let { id } = req.params;
   let deletedListing = await Listing.findByIdAndDelete(id);
-  console.log(deletedListing);
+  // console.log(deletedListing);
   res.redirect("/listings");
 }));
 
