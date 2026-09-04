@@ -14,4 +14,4 @@ const reviewSchema = new Schema({
     }
 });
 
-module.exports =mongoose.model("Revieew",reviewSchema);
+module.exports =mongoose.model("reviews",reviewSchema);
