@@ -4,6 +4,7 @@ const Listing = require("../models/listing.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const { listingSchema } = require("../schema.js");
+const {isLoggedIn} = require("../middlewear.js");
 
 // validate listing
 const validateListing = (req, res, next) => {
@@ -27,7 +28,7 @@ router.get(
 );
 
 // New Route
-router.get("/new", (req, res) => {
+router.get("/new",isLoggedIn, (req, res) => {
   res.render("listings/new.ejs");
 });
 
@@ -36,11 +37,12 @@ router.get(
   "/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
+    const listing = await Listing.findById(id).populate("reviews").populate("owner");
     if(!listing){
       req.flash("error", "Listing you requested doesn't exit !");
-      res.redirect("/listings");
+      return res.redirect("/listings");
     }
+    // console.log(listing);
     res.render("listings/show.ejs", { listing });
   })
 );
@@ -48,7 +50,7 @@ router.get(
 // Create Route
 router.post(
   "/",
-  validateListing,
+  validateListing,isLoggedIn,
   wrapAsync(async (req, res) => {
     const listingData = req.body.listing;
     // if user left image blank, remove it so the model's default url kicks in
@@ -58,6 +60,7 @@ router.post(
       listingData.image.filename = listingData.image.filename || "listingimage";
     }
     const newListing = new Listing(listingData);
+    newListing.owner = req.user._id; // Set the owner of the listing to the currently logged-in user
     await newListing.save();
     req.flash("success", "New listing Created !");
     res.redirect("/listings");
@@ -66,13 +69,13 @@ router.post(
 
 // Edit Route
 router.get(
-  "/:id/edit",
+  "/:id/edit",isLoggedIn,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
     if(!listing){
       req.flash("error", "Listing you requested doesn't exit !");
-      res.redirect("/listings");
+      return res.redirect("/listings");
     }
     res.render("listings/edit.ejs", { listing });
   })
@@ -81,7 +84,7 @@ router.get(
 // Update Route
 router.put(
   "/:id",
-  validateListing,
+  validateListing,isLoggedIn,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listingData = req.body.listing;
@@ -99,7 +102,7 @@ router.put(
 
 // Delete Route
 router.delete(
-  "/:id",
+  "/:id",isLoggedIn,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndDelete(id);
