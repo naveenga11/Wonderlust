@@ -2,21 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Listing = require("../models/listing.js");
 const wrapAsync = require("../utils/wrapAsync.js");
-const ExpressError = require("../utils/ExpressError.js");
-const { listingSchema } = require("../schema.js");
-const {isLoggedIn} = require("../middlewear.js");
-
-// validate listing
-const validateListing = (req, res, next) => {
-  // validate the nested listing object (routes send req.body.listing)
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
-  }
-};
+const {isLoggedIn , isOwner, validateListing} = require("../middlewear.js");
 
 // Index Route
 router.get(
@@ -53,12 +39,6 @@ router.post(
   validateListing,isLoggedIn,
   wrapAsync(async (req, res) => {
     const listingData = req.body.listing;
-    // if user left image blank, remove it so the model's default url kicks in
-    if (!listingData.image || !listingData.image.url || !listingData.image.url.trim()) {
-      delete listingData.image;
-    } else {
-      listingData.image.filename = listingData.image.filename || "listingimage";
-    }
     const newListing = new Listing(listingData);
     newListing.owner = req.user._id; // Set the owner of the listing to the currently logged-in user
     await newListing.save();
@@ -69,7 +49,7 @@ router.post(
 
 // Edit Route
 router.get(
-  "/:id/edit",isLoggedIn,
+  "/:id/edit",isLoggedIn,isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
@@ -84,16 +64,9 @@ router.get(
 // Update Route
 router.put(
   "/:id",
-  validateListing,isLoggedIn,
+  isLoggedIn,isOwner,  validateListing,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    const listingData = req.body.listing;
-    // if user cleared the image url, don't overwrite with an empty value
-    if (!listingData.image || !listingData.image.url || !listingData.image.url.trim()) {
-      delete listingData.image;
-    } else {
-      listingData.image.filename = listingData.image.filename || "listingimage";
-    }
     await Listing.findByIdAndUpdate(id, { ...listingData });
     req.flash("success", " listing updated !");
     res.redirect(`/listings/${id}`);
@@ -102,7 +75,7 @@ router.put(
 
 // Delete Route
 router.delete(
-  "/:id",isLoggedIn,
+  "/:id",isLoggedIn,isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     await Listing.findByIdAndDelete(id);
