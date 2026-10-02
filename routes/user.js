@@ -6,23 +6,26 @@ const passport = require("passport");
 const {saveRedirectUrl} = require("../middlewear.js")
  
 const userController = require("../controllers/users.js");
-//sing up
-router.get("/signup", userController.renderSignupForm);
 
-router.post("/signup" , wrapAsync(userController.signup));
+//sing up
+router
+.route("/signup")
+.get(userController.renderSignupForm)
+.post(wrapAsync(userController.signup));
+
 
 //login
-router.get("/login" ,userController.renderLoginForm);
-
-//passport middlewear will handle it
-
-router.post("/login", saveRedirectUrl,
+router
+.route("/login")
+.get(userController.renderLoginForm)
+.post(saveRedirectUrl,
     passport.authenticate('local' , { 
         failureRedirect: '/login' ,
         failureFlash : true}) ,
     userController.login);
 
+
 //logout
 router.get("/logout" ,userController.logout);
 
-module.exports= router;
+module.exports= router; 

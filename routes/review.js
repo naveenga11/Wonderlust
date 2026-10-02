@@ -15,4 +15,4 @@ router.post("/",validateReview,isLoggedIn,wrapAsync(reviewControlle.createReview
 // delete review route
 router.delete("/:reviewId",isLoggedIn,isReviewAuthor,wrapAsync(reviewControlle.distroyReview));
 
-module.exports = router;
+module.exports = router; 
