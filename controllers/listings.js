@@ -27,10 +27,13 @@ module.exports.showListing = async (req, res) => {
     res.render("listings/show.ejs", { listing });
   };
 
-module.exports.createListing = async (req, res) => {
+module.exports.createListing = async (req, res,next) => {
+   let url= req.file.path;
+   let filename = req.file.filename;
     const listingData = req.body.listing;
     const newListing = new Listing(listingData);
     newListing.owner = req.user._id; // Set the owner of the listing to the currently logged-in user
+    newListing.image = {url,filename}; 
     await newListing.save();
     req.flash("success", "New listing Created !");
     res.redirect("/listings");
@@ -43,12 +46,22 @@ module.exports.renderEdiForm = async (req, res) => {
       req.flash("error", "Listing you requested doesn't exit !");
       return res.redirect("/listings");
     }
+    //image preview
+    let originalImageUrl = listing.image.url;
+    originalImageUrl.replace("/upload" ,"/upload/h_300,w_250");
     res.render("listings/edit.ejs", { listing });
   };
 
 module.exports.UpdateListing = async (req, res) => {
     let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...listingData });
+    let listing = await Listing.findByIdAndUpdate(id, { ...listingData });
+
+    if(req.file){
+      let url= req.file.path;
+      let filename = req.file.filename;
+      listing.image = {url,filename}; 
+      await listing.save(); 
+    }
     req.flash("success", " listing updated !");
     res.redirect(`/listings/${id}`);
   };
