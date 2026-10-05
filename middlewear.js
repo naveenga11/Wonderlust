@@ -26,14 +26,14 @@ module.exports.saveRedirectUrl =(req, res, next )=>{
 
 
 //athuntification
-module.exports.isOwner =async(req,res,next)=>{
+module.exports.isOwner = async (req, res, next) => {
    let { id } = req.params;
-      const listingData = req.body.listing;
-      let listing = await Listing.findById(id);
-      if(curUser && !listing.owner.equals(res.locals.curUser._id)){
-        req.flash("error" , "you dont have permission to edit");
-        return res.redirect(`/listings/${id}`);
-      }
+   let listing = await Listing.findById(id);
+   if (!listing.owner.equals(res.locals.curUser._id)) {
+     req.flash("error", "you dont have permission to edit");
+     return res.redirect(`/listings/${id}`);
+   }
+   next();
 };
 
 module.exports.validateListing = (req, res, next) => {
@@ -61,12 +61,13 @@ module.exports.validateReview = (req, res, next) => {
 };
 
 //athuntification
-module.exports.isReviewAuthor =async(req,res,next)=>{
-   let {id, reviewId } = req.params;
-      let review = await Review.findById(reviewId);
-      if(curUser && !review.author.equals(res.locals.curUser._id)){
-        req.flash("error" , "you dont have permission to delete");
-        return res.redirect(`/listings/${id}`);
-      }
+module.exports.isReviewAuthor = async (req, res, next) => {
+   let { id, reviewId } = req.params;
+   let review = await Review.findById(reviewId);
+   if (!review.author.equals(res.locals.curUser._id)) {
+     req.flash("error", "you dont have permission to delete");
+     return res.redirect(`/listings/${id}`);
+   }
+   next();
 };
 

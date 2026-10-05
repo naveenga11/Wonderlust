@@ -5,19 +5,17 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const {isLoggedIn , isOwner, validateListing} = require("../middlewear.js");
 const listingController = require("../controllers/listings.js");
 const multer  = require('multer');
-const {Storage} = require("../cloudConfig.js")
-const upload = multer({ Storage })
-
-
+const { storage } = require("../cloudConfig.js");  // fix: lowercase storage
+const upload = multer({ storage });                 // fix: { storage } not { Storage }
 
 
 router
 .route("/")
 .get(wrapAsync(listingController.index)) // Index Route
 .post(
-    validateListing,
     isLoggedIn,
-    upload.single("listing[image]"),
+    upload.single("image"),              // fix: simple field name "image"
+    validateListing,
     wrapAsync(listingController.createListing)); // Create Route
 
 
@@ -28,16 +26,11 @@ router.get("/new",isLoggedIn,listingController.RenderNewForm);
 router
     .route("/:id")
     .get(wrapAsync(listingController.showListing)) // Show Route
-    .put(isLoggedIn , isOwner,upload.single("listing[image]"), validateListing, wrapAsync(listingController.UpdateListing)) //update route
+    .put(isLoggedIn , isOwner, upload.single("image"), validateListing, wrapAsync(listingController.UpdateListing)) //update route
     .delete(isLoggedIn, isOwner, wrapAsync(listingController.destroyListing)); //delete route
 
 // Edit Route
 router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.renderEdiForm));
 
 
-
-
-
-
-module.exports = router; 
- 
+module.exports = router;

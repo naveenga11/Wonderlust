@@ -38,24 +38,78 @@
 
 
           <div class="mt-3 mb-3">
-            <label for="rating" class="form-label"></label>Rating</label>
-            <fieldset class="starability-basic">
-              <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="0" checked aria-label="No rating." />
-              <input type="radio" id="first-rate1" name="review[rating]" value="1" />
-              <label for="first-rate1" title="Terrible">1 star</label>
-              <input type="radio" id="first-rate2" name="review[rating]" value="2" />
-              <label for="first-rate2" title="Not good">2 stars</label>
-              <input type="radio" id="first-rate3" name="review[rating]" value="3" />
-              <label for="first-rate3" title="Average">3 stars</label>
-              <input type="radio" id="first-rate4" name="review[rating]" value="4" />
-              <label for="first-rate4" title="Very good">4 stars</label>
-              <input type="radio" id="first-rate5" name="review[rating]" value="5" />
-              <label for="first-rate5" title="Amazing">5 stars</label>
-            </fieldset>
+            <label class="form-label">Rating</label>
+            <div class="star-rating-widget">
+              <div class="stars-row" id="starsRow">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+              </div>
+              <span class="rating-label" id="ratingLabel">Select a rating</span>
+              <!-- hidden input carries the value to the server -->
+              <input type="hidden" name="review[rating]" id="ratingInput" value="" required />
+            </div>
           </div>
 
+          <style>
+            .star-rating-widget { display: flex; align-items: center; gap: 0.75rem; }
+            .stars-row { display: flex; gap: 4px; }
+            .star {
+              font-size: 2rem;
+              color: #d1d5db;
+              cursor: pointer;
+              transition: color 0.15s, transform 0.15s;
+              line-height: 1;
+              user-select: none;
+            }
+            .star.hovered, .star.selected { color: #f59e0b; }
+            .star:hover { transform: scale(1.2); }
+            .rating-label {
+              font-size: 0.85rem;
+              color: #6b7280;
+              font-style: italic;
+              min-width: 90px;
+            }
+          </style>
+
+          <script>
+            (function () {
+              const labels = ["Terrible","Not good","Average","Very good","Amazing"];
+              const stars  = document.querySelectorAll("#starsRow .star");
+              const input  = document.getElementById("ratingInput");
+              const lbl    = document.getElementById("ratingLabel");
+              let selected = 0;
+
+              function paint(upTo, cls) {
+                stars.forEach(function(s, i) {
+                  s.classList.toggle(cls, i < upTo);
+                });
+              }
+
+              stars.forEach(function(star) {
+                star.addEventListener("mouseenter", function() {
+                  const v = +star.dataset.value;
+                  paint(v, "hovered");
+                  lbl.textContent = labels[v - 1];
+                });
+                star.addEventListener("mouseleave", function() {
+                  paint(0, "hovered");
+                  lbl.textContent = selected ? labels[selected - 1] : "Select a rating";
+                });
+                star.addEventListener("click", function() {
+                  selected = +star.dataset.value;
+                  input.value = selected;
+                  paint(selected, "selected");
+                  lbl.textContent = labels[selected - 1];
+                });
+              });
+            })();
+          </script>
+
           <div class="mt-3 mb-3">
-            <label for="comment" class="form-label"></label>Comments</label>
+            <label for="comment" class="form-label">Comments</label>
             <textarea name="review[comment]" required id="comment" cols="20" rows="5" class="form-control"></textarea>
             <div class="invalid-feedback">please add some Comments</div>
           </div>
@@ -70,7 +124,7 @@
         <div class="card col-5 ms-3 mb-3"> 
           <div class="card-body">
             <h5 class="card-title">@<%= review.author.username %></h5>
-            <p class="card-text"><%=review.commment %></p>
+            <p class="card-text"><%=review.comment %></p>
              <p class="starability-result card-text" data-rating="<%=review.rating %>"> </p>
           </div>
           <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="post" class="mb-3 mt-3">

@@ -1,17 +1,118 @@
- <% if(success && success.length ){ %> 
-  <div class="alert alert-success alert-dismissible fade show col-6 offset-2" role="alert">
-  <%= success %>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<style>
+  .flash-container {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 280px;
+    max-width: 380px;
+  }
+
+  .flash-toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    animation: slideIn 0.3s ease;
+    backdrop-filter: blur(6px);
+  }
+
+  .flash-toast.success {
+    background: #ecfdf5;
+    border-left: 4px solid #22c55e;
+    color: #15803d;
+  }
+
+  .flash-toast.error {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #b91c1c;
+  }
+
+  .flash-toast .flash-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .flash-toast .flash-msg {
+    flex: 1;
+  }
+
+  .flash-toast .flash-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.5;
+    padding: 0;
+    color: inherit;
+    flex-shrink: 0;
+  }
+
+  .flash-toast .flash-close:hover {
+    opacity: 1;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(40px); }
+  }
+
+  .flash-toast.hiding {
+    animation: fadeOut 0.3s ease forwards;
+  }
+</style>
+
+<div class="flash-container">
+
+  <% if(success && success.length){ %>
+  <div class="flash-toast success">
+    <span class="flash-icon"><i class="fa-solid fa-circle-check"></i></span>
+    <span class="flash-msg"><%= success %></span>
+    <button class="flash-close" aria-label="Close">&times;</button>
   </div>
-<% } %>
+  <% } %>
 
+  <% if(error && error.length){ %>
+  <div class="flash-toast error">
+    <span class="flash-icon"><i class="fa-solid fa-circle-exclamation"></i></span>
+    <span class="flash-msg"><%= error %></span>
+    <button class="flash-close" aria-label="Close">&times;</button>
+  </div>
+  <% } %>
 
- <% if(error && error.length ){ %> 
-  <div class="alert alert-success alert-dismissible fade show col-6 offset-2" role="alert">
-  <%= error %>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 
-<% } %>
-
-<!-- success is an arr ,it exitings even no elements -->
+<script>
+  (function(){
+    // close button
+    document.querySelectorAll(".flash-close").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var toast = btn.closest(".flash-toast");
+        toast.classList.add("hiding");
+        toast.addEventListener("animationend", function(){ toast.remove(); });
+      });
+    });
+    // auto-dismiss after 4s
+    document.querySelectorAll(".flash-toast").forEach(function(toast){
+      setTimeout(function(){
+        if(!toast.isConnected) return;
+        toast.classList.add("hiding");
+        toast.addEventListener("animationend", function(){ toast.remove(); });
+      }, 4000);
+    });
+  })();
+</script>

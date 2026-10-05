@@ -7,6 +7,7 @@ module.exports.createReview = async (req, res) => {
       throw new ExpressError(404, "Listing not found");
     }
     let newReview = new Review(req.body.review);
+    newReview.author = req.user._id;
     await newReview.save();
     // push the review id (not the whole document)
     listing.reviews.push(newReview._id);
